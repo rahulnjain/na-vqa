@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NA-VQA: Narrative Aligned Long Form Video Question Answering</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f6f8fa;
+      --surface2: #eef1f4;
+      --border: #d0d7de;
+      --accent: #0969da;
+      --accent2: #1a7f37;
+      --accent3: #cf222e;
+      --text: #1f2328;
+      --text-muted: #656d76;
+      --gold: #9a6700;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255,255,255,0.90);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      height: 56px;
+    }
+    .nav-brand { font-weight: 700; font-size: 1rem; color: var(--accent); letter-spacing: -0.02em; }
+    .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.875rem; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      max-width: 900px; margin: 0 auto;
+      padding: 80px 2rem 60px;
+      text-align: center;
+    }
+    .venue-tag {
+      display: inline-block;
+      background: rgba(88,166,255,0.12);
+      border: 1px solid rgba(88,166,255,0.3);
+      color: var(--accent);
+      font-size: 0.8rem; font-weight: 600;
+      padding: 4px 14px; border-radius: 999px;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 700; line-height: 1.25;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, #1f2328 0%, #656d76 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .authors {
+      display: flex; flex-wrap: wrap; justify-content: center;
+      gap: 0.25rem 1rem; margin-bottom: 0.75rem;
+    }
+    .author { font-size: 1rem; color: var(--text); font-weight: 500; }
+    .author sup { color: var(--accent); font-size: 0.7em; }
+    .affiliation { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 2rem; }
+
+    .btn-group { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 2rem; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 10px 20px; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 600;
+      text-decoration: none; transition: all .2s;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: var(--accent); color: #0d1117;
+      border-color: var(--accent);
+    }
+    .btn-primary:hover { background: #79c0ff; }
+    .btn-secondary {
+      background: var(--surface2); color: var(--text);
+      border-color: var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-green {
+      background: rgba(63,185,80,0.15); color: var(--accent2);
+      border-color: rgba(63,185,80,0.4);
+    }
+    .btn-green:hover { background: rgba(63,185,80,0.25); }
+
+    /* ── SECTIONS ── */
+    section { max-width: 900px; margin: 0 auto; padding: 60px 2rem; }
+    section + section { border-top: 1px solid var(--border); }
+
+    h2 {
+      font-size: 1.4rem; font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+      color: var(--text);
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    h2::before {
+      content: '';
+      display: inline-block; width: 4px; height: 1.2em;
+      background: var(--accent); border-radius: 2px;
+    }
+
+    /* ── ABSTRACT ── */
+    .abstract-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+    .abstract-box strong { color: var(--text); }
+
+    /* ── STATS CARDS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem; margin-top: 0.5rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1rem;
+      text-align: center;
+    }
+    .stat-card .num {
+      font-size: 2rem; font-weight: 700;
+      color: var(--accent);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .stat-card .label { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.4rem; }
+
+    /* ── EVIDENCE SPANS ── */
+    .span-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1rem; margin-top: 1.5rem;
+    }
+    .span-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.25rem;
+      text-align: center;
+    }
+    .span-card .span-tag {
+      display: inline-block;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 999px;
+      margin-bottom: 0.6rem;
+    }
+    .short .span-tag  { background: rgba(63,185,80,0.15);  color: var(--accent2); }
+    .medium .span-tag { background: rgba(210,153,34,0.15); color: var(--gold); }
+    .far .span-tag    { background: rgba(247,129,102,0.15); color: var(--accent3); }
+    .span-card .span-desc { font-size: 0.85rem; color: var(--text-muted); }
+
+    /* ── REASONING TYPES ── */
+    .reason-chips {
+      display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1rem;
+    }
+    .chip {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 0.82rem; font-weight: 500;
+      color: var(--text-muted);
+    }
+    .chip.active { border-color: var(--accent); color: var(--accent); background: rgba(88,166,255,0.1); }
+
+    /* ── LEADERBOARD ── */
+    .lb-controls {
+      display: flex; gap: 0.5rem; flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .tab-btn {
+      padding: 6px 16px; border-radius: 6px;
+      font-size: 0.82rem; font-weight: 600;
+      border: 1px solid var(--border);
+      background: var(--surface2); color: var(--text-muted);
+      cursor: pointer; transition: all .2s;
+    }
+    .tab-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(88,166,255,0.1); }
+
+    .lb-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    thead th {
+      background: var(--surface);
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.04em; text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    thead th:not(:first-child) { text-align: center; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(88,166,255,0.04); }
+    tbody td { padding: 11px 16px; color: var(--text); }
+    tbody td:not(:first-child):not(:nth-child(2)) { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; }
+
+    .rank { font-weight: 700; color: var(--text-muted); font-size: 0.8rem; width: 40px; }
+    .rank.gold   { color: #ffd700; }
+    .rank.silver { color: #c0c0c0; }
+    .rank.bronze { color: #cd7f32; }
+
+    .model-name { font-weight: 500; }
+    .model-tag {
+      display: inline-block;
+      font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 4px;
+      margin-left: 6px; vertical-align: middle;
+    }
+    .tag-prop { background: rgba(247,129,102,0.15); color: var(--accent3); }
+    .tag-open { background: rgba(63,185,80,0.15);  color: var(--accent2); }
+    .tag-ft   { background: rgba(210,153,34,0.15); color: var(--gold); }
+    .tag-ours { background: rgba(88,166,255,0.15); color: var(--accent); }
+
+    .score-best { color: var(--accent); font-weight: 700; }
+    .score-good { color: var(--accent2); }
+
+    /* ── DOWNLOAD ── */
+    .download-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem; margin-top: 0.5rem;
+    }
+    .dl-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.25rem 1.5rem;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .dl-card .dl-title { font-weight: 600; font-size: 0.95rem; }
+    .dl-card .dl-desc  { font-size: 0.8rem; color: var(--text-muted); flex: 1; }
+    .dl-card .btn { margin-top: 0.75rem; justify-content: center; }
+
+    /* ── CITATION ── */
+    .bibtex {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px; padding: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem; line-height: 1.8;
+      color: var(--text-muted);
+      overflow-x: auto;
+      position: relative;
+    }
+    .bibtex .key   { color: var(--accent); }
+    .bibtex .value { color: var(--accent2); }
+    .copy-btn {
+      position: absolute; top: 1rem; right: 1rem;
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text-muted); padding: 5px 12px;
+      border-radius: 6px; font-size: 0.75rem; cursor: pointer;
+      transition: all .2s;
+    }
+    .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center; padding: 2rem;
+      font-size: 0.8rem; color: var(--text-muted);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .span-grid { grid-template-columns: 1fr; }
+      nav { padding: 0 1rem; }
+      .nav-links { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-brand">NA-VQA</span>
+  <ul class="nav-links">
+    <li><a href="#abstract">Abstract</a></li>
+    <li><a href="#dataset">Dataset</a></li>
+    <li><a href="#leaderboard">Leaderboard</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#citation">Citation</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="venue-tag">arXiv 2025</div>
+  <h1>Narrative Aligned Long Form Video Question Answering</h1>
+
+  <div class="authors">
+    <span class="author">Rahul Jain<sup>*</sup></span>
+    <span class="author">Keval Doshi<sup>*</sup></span>
+    <span class="author">Burak Uzkent</span>
+    <span class="author">Garin Kessler</span>
+  </div>
+  <div class="affiliation"><sup>*</sup> Equal contribution</div>
+
+  <div class="btn-group">
+    <a href="https://arxiv.org/abs/2603.19481" class="btn btn-primary" target="_blank">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8" style="fill:none;stroke:currentColor;stroke-width:2"/></svg>
+      Paper
+    </a>
+    <a href="https://arxiv.org/pdf/2603.19481" class="btn btn-secondary" target="_blank">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      PDF
+    </a>
+    <a href="#download" class="btn btn-green">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+      Dataset
+    </a>
+    <a href="#" class="btn btn-secondary" target="_blank">
+      <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+      Code (coming soon)
+    </a>
+  </div>
+</div>
+
+<!-- ABSTRACT -->
+<section id="abstract">
+  <h2>Abstract</h2>
+  <div class="abstract-box">
+    We introduce <strong>NA-VQA</strong>, a benchmark comprising <strong>88 full-length movies</strong> and <strong>4,442 question-answer pairs</strong> designed to evaluate deep temporal and narrative reasoning in long-form videos. Questions are categorized by evidence span length — <strong>Short</strong>, <strong>Medium</strong>, and <strong>Far</strong> — to systematically assess long-range dependencies. We also propose <strong>Video-NaRA</strong>, a framework that builds event-level chains and stores them in a structured memory for retrieval during reasoning. Experiments reveal that current models perform poorly on far-range questions, while our framework achieves up to <strong>3% improvement</strong> on such challenging questions.
+  </div>
+</section>
+
+<!-- DATASET -->
+<section id="dataset">
+  <h2>Dataset Overview</h2>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="num">88</div>
+      <div class="label">Full-Length Movies</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">4,442</div>
+      <div class="label">QA Pairs</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">~2 hrs</div>
+      <div class="label">Avg. Video Duration</div>
+    </div>
+    <div class="stat-card">
+      <div class="num">7</div>
+      <div class="label">Reasoning Types</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;">
+    <h2>Evidence Span Categories</h2>
+    <div class="span-grid">
+      <div class="span-card short">
+        <div class="span-tag">Short</div>
+        <div class="span-desc">Evidence localized within a brief temporal window — tests local comprehension.</div>
+      </div>
+      <div class="span-card medium">
+        <div class="span-tag">Medium</div>
+        <div class="span-desc">Evidence spread across a moderate temporal range — tests mid-range reasoning.</div>
+      </div>
+      <div class="span-card far">
+        <div class="span-tag">Far</div>
+        <div class="span-desc">Evidence distributed across the full video — tests long-range narrative reasoning.</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top: 2rem;">
+    <h2>Reasoning Type Coverage</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem;">NA-VQA is the only benchmark covering all 7 reasoning types:</p>
+    <div class="reason-chips">
+      <span class="chip active">Causal</span>
+      <span class="chip active">Narrative</span>
+      <span class="chip active">Character</span>
+      <span class="chip active">Thematic</span>
+      <span class="chip active">Goal-Based</span>
+      <span class="chip active">Social</span>
+      <span class="chip active">Hypothetical</span>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERBOARD -->
+<section id="leaderboard">
+  <h2>Leaderboard</h2>
+  <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;">
+    Models evaluated on NA-VQA across Short / Medium / Far evidence spans. Overall score is the average across all splits.
+  </p>
+
+  <div class="lb-controls">
+    <button class="tab-btn active" onclick="filterLB('all', this)">All Models</button>
+    <button class="tab-btn" onclick="filterLB('proprietary', this)">Proprietary</button>
+    <button class="tab-btn" onclick="filterLB('open', this)">Open-Source</button>
+    <button class="tab-btn" onclick="filterLB('finetuned', this)">Fine-Tuned</button>
+  </div>
+
+  <div class="lb-wrap">
+    <table id="lb-table">
+      <thead>
+        <tr>
+          <th style="width:44px">#</th>
+          <th>Model</th>
+          <th>Short</th>
+          <th>Medium</th>
+          <th>Far</th>
+          <th>Overall</th>
+        </tr>
+      </thead>
+      <tbody id="lb-body">
+        <!-- populated by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.75rem;">
+    <span style="color:var(--accent)">■</span> Proprietary &nbsp;
+    <span style="color:var(--accent2)">■</span> Open-Source &nbsp;
+    <span style="color:var(--gold)">■</span> Fine-Tuned &nbsp;
+    <span style="color:var(--accent)">★</span> Ours
+  </p>
+</section>
+
+<!-- DOWNLOAD -->
+<section id="download">
+  <h2>Download</h2>
+  <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;">
+    The NA-VQA dataset is publicly released for research purposes. Please review the license before use.
+  </p>
+  <div class="download-grid">
+    <div class="dl-card">
+      <div class="dl-title">QA Annotations</div>
+      <div class="dl-desc">4,442 question-answer pairs with evidence span labels, reasoning type tags, and movie metadata. JSON format.</div>
+      <a href="#" class="btn btn-green">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download (~12 MB)
+      </a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-title">Evaluation Code</div>
+      <div class="dl-desc">Official evaluation scripts for computing Comprehensiveness, Depth, Evidence, and Reasoning scores.</div>
+      <a href="#" class="btn btn-secondary">
+        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub (coming soon)
+      </a>
+    </div>
+    <div class="dl-card">
+      <div class="dl-title">Video Features</div>
+      <div class="dl-desc">Pre-extracted CLIP visual features and audio transcripts for all 88 movies. HDF5 format.</div>
+      <a href="#" class="btn btn-secondary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Coming Soon
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CITATION -->
+<section id="citation">
+  <h2>Citation</h2>
+  <div class="bibtex" id="bibtex-block">
+    <button class="copy-btn" onclick="copyBibtex()">Copy</button>
+<span class="key">@article</span>{jain2025navqa,<br>
+&nbsp;&nbsp;<span class="key">title</span>   = {<span class="value">Narrative Aligned Long Form Video Question Answering</span>},<br>
+&nbsp;&nbsp;<span class="key">author</span>  = {<span class="value">Jain, Rahul and Doshi, Keval and Uzkent, Burak and Kessler, Garin</span>},<br>
+&nbsp;&nbsp;<span class="key">journal</span> = {<span class="value">arXiv preprint arXiv:2603.19481</span>},<br>
+&nbsp;&nbsp;<span class="key">year</span>    = {<span class="value">2025</span>}<br>
+}
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>NA-VQA &nbsp;·&nbsp; <a href="https://arxiv.org/abs/2603.19481" target="_blank">arXiv</a> &nbsp;·&nbsp; For questions, open a GitHub issue.</p>
+  <p style="margin-top:0.5rem">Website template built with vanilla HTML/CSS/JS · No frameworks needed.</p>
+</footer>
+
+<script>
+  // ── Leaderboard data ──
+  const models = [
+    { name: "Claude Sonnet 4.5", type: "proprietary", short: 54.29, medium: 63.64, far: 67.64, overall: 62.15 },
+    { name: "GPT-4o (120B)",     type: "proprietary", short: 45.78, medium: 49.96, far: 51.89, overall: 49.38 },
+    { name: "Qwen-235B",         type: "proprietary", short: 43.30, medium: 51.29, far: 54.40, overall: 51.28 },
+    { name: "Video-NaRA (FT)",   type: "finetuned",   short: null,  medium: null,  far: null,  overall: 35.74, ours: true },
+    { name: "Qwen2.5-VL (128f)", type: "finetuned",   short: null,  medium: null,  far: null,  overall: 33.79 },
+    { name: "Video-NaRA",        type: "open",        short: null,  medium: null,  far: null,  overall: 34.88, ours: true },
+    { name: "Qwen2.5-VL (7B)",   type: "open",        short: null,  medium: null,  far: null,  overall: 33.18 },
+    { name: "Video-LLaMA3 (7B)", type: "open",        short: null,  medium: null,  far: null,  overall: 32.83 },
+    { name: "VideoChat-Flash 7B",type: "open",        short: null,  medium: null,  far: null,  overall: 30.31 },
+    { name: "MovieChat (7B)",    type: "open",        short: null,  medium: null,  far: null,  overall: 29.98 },
+    { name: "LLaVA-OneVision 7B",type: "open",        short: null,  medium: null,  far: null,  overall: 28.50 },
+    { name: "VideoLLaVA (7B)",   type: "open",        short: null,  medium: null,  far: null,  overall: 16.30 },
+  ];
+
+  const tagMap = {
+    proprietary: ['tag-prop', 'Proprietary'],
+    open:        ['tag-open', 'Open-Source'],
+    finetuned:   ['tag-ft',   'Fine-Tuned'],
+  };
+
+  let currentFilter = 'all';
+
+  function fmt(v) {
+    return v !== null ? v.toFixed(2) : '—';
+  }
+
+  function scoreClass(v, max) {
+    if (v === null) return '';
+    if (v === max)   return 'score-best';
+    if (v >= max * 0.95) return 'score-good';
+    return '';
+  }
+
+  function renderLB(filter) {
+    const filtered = filter === 'all' ? models : models.filter(m => m.type === filter);
+    const sorted   = [...filtered].sort((a, b) => b.overall - a.overall);
+    const maxOverall = Math.max(...sorted.map(m => m.overall));
+
+    const body = document.getElementById('lb-body');
+    body.innerHTML = '';
+
+    sorted.forEach((m, i) => {
+      const rankClass = i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : '';
+      const rankSym   = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+      const [tagCls, tagLabel] = tagMap[m.type];
+      const oursLabel = m.ours ? '<span class="model-tag tag-ours">Ours</span>' : '';
+
+      const tr = document.createElement('tr');
+      tr.dataset.type = m.type;
+      tr.innerHTML = `
+        <td class="rank ${rankClass}">${rankSym}</td>
+        <td class="model-name">
+          ${m.name}
+          <span class="model-tag ${tagCls}">${tagLabel}</span>
+          ${oursLabel}
+        </td>
+        <td>${fmt(m.short)}</td>
+        <td>${fmt(m.medium)}</td>
+        <td>${fmt(m.far)}</td>
+        <td class="${scoreClass(m.overall, maxOverall)}">${fmt(m.overall)}</td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+
+  function filterLB(type, btn) {
+    currentFilter = type;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderLB(type);
+  }
+
+  renderLB('all');
+
+  // ── Copy BibTeX ──
+  function copyBibtex() {
+    const raw = `@article{jain2025navqa,
+  title   = {Narrative Aligned Long Form Video Question Answering},
+  author  = {Jain, Rahul and Doshi, Keval and Uzkent, Burak and Kessler, Garin},
+  journal = {arXiv preprint arXiv:2603.19481},
+  year    = {2025}
+}`;
+    navigator.clipboard.writeText(raw).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  }
+</script>
+
+</body>
+</html>

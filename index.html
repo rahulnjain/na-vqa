@@ -287,10 +287,97 @@
     }
     footer a { color: var(--accent); text-decoration: none; }
 
+    /* ── EXAMPLES ── */
+    .example-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .example-card:last-child { margin-bottom: 0; }
+
+    .frame-strip {
+      display: flex; gap: 3px;
+      background: #111; padding: 6px;
+    }
+    .frame-strip img {
+      flex: 1; height: 90px;
+      object-fit: cover; border-radius: 3px;
+      min-width: 0;
+    }
+    .frame-placeholder {
+      flex: 1; height: 90px;
+      border-radius: 3px;
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); font-size: 0.7rem;
+    }
+
+    .example-arrow {
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      margin: 0 6px;
+    }
+
+    .example-body { padding: 1.25rem 1.5rem; }
+
+    .example-question {
+      font-size: 1rem; font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+    .example-question span { color: var(--accent); }
+
+    .example-events {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .example-events .events-title {
+      font-size: 0.78rem; font-weight: 700;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 0.6rem;
+    }
+    .example-events ol {
+      padding-left: 1.2rem;
+      color: var(--text);
+      font-size: 0.875rem;
+      line-height: 1.7;
+    }
+
+    .example-answer {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent2);
+      border-radius: 0 8px 8px 0;
+      padding: 1rem 1.25rem;
+      font-size: 0.875rem;
+      line-height: 1.75;
+      color: var(--text-muted);
+    }
+    .example-answer strong { color: var(--text); }
+
+    .example-label {
+      display: inline-block;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 10px;
+      font-size: 0.72rem; font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      float: right;
+    }
+
     @media (max-width: 600px) {
       .span-grid { grid-template-columns: 1fr; }
       nav { padding: 0 1rem; }
       .nav-links { gap: 1rem; }
+      .frame-strip img, .frame-placeholder { height: 60px; }
     }
   </style>
 </head>
@@ -302,6 +389,7 @@
   <ul class="nav-links">
     <li><a href="#abstract">Abstract</a></li>
     <li><a href="#dataset">Dataset</a></li>
+    <li><a href="#examples">Examples</a></li>
     <li><a href="#leaderboard">Leaderboard</a></li>
     <li><a href="#download">Download</a></li>
     <li><a href="#citation">Citation</a></li>
@@ -401,6 +489,80 @@
       <span class="chip active">Goal-Based</span>
       <span class="chip active">Social</span>
       <span class="chip active">Hypothetical</span>
+    </div>
+  </div>
+</section>
+
+<!-- EXAMPLES -->
+<section id="examples">
+  <h2>Dataset Examples</h2>
+  <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem;">
+    Each sample includes video frames, a narrative question, a chain of supporting events, and a long-form answer.
+  </p>
+
+  <!-- Example A -->
+  <div class="example-card">
+    <div class="frame-strip">
+      <div class="frame-placeholder" style="background:#3a2a1a">🎬</div>
+      <div class="frame-placeholder" style="background:#2a1a0a">🎬</div>
+      <div class="frame-placeholder" style="background:#3a2a1a">🎬</div>
+      <div class="frame-placeholder" style="background:#2a2a2a">🎬</div>
+      <div class="frame-placeholder" style="background:#1a2a3a">🎬</div>
+      <div class="frame-placeholder" style="background:#2a1a2a">🎬</div>
+    </div>
+    <div class="example-arrow"></div>
+    <div class="example-body">
+      <span class="example-label">Example a</span>
+      <div class="example-question">
+        <span>Question:</span> How does the man achieve the goal of creating a convincing family portrait despite the unusual circumstances surrounding the child?
+      </div>
+      <div class="example-events">
+        <div class="events-title">Events</div>
+        <ol>
+          <li>A man retrieves a camera with tripod from storage to capture a family photograph.</li>
+          <li>The woman holds the blonde toddler wrapped in a yellow blanket on the couch while the man sets up the camera.</li>
+          <li>The man anxiously sets up a camera in the kitchen for a family photograph.</li>
+          <li>The man gives animated instructions to the woman and the toddler about the photograph.</li>
+          <li>The man positions himself near the woman and the baby with the camera's cable release in hand to complete their portrayal as a proper family unit.</li>
+          <li>The man grins at the camera while seated with the woman and the baby for what appears to be a family portrait.</li>
+        </ol>
+      </div>
+      <div class="example-answer">
+        <strong>Answer:</strong> The man achieves the goal of creating a convincing family portrait through careful staging and props. He retrieves a camera with tripod from storage, demonstrating planning and intention to document their family appearance. He gives animated instructions about positioning and expressions while setting up the shot. The woman holds the blonde toddler wrapped in a yellow blanket on their floral-patterned couch, creating a traditional family tableau. Despite their nervous body language revealing their discomfort with the deception, they successfully create visual evidence of their pretend normal family life.
+      </div>
+    </div>
+  </div>
+
+  <!-- Example B -->
+  <div class="example-card">
+    <div class="frame-strip" style="background:#000">
+      <div class="frame-placeholder" style="background:#1a1a1a; color:#666">🎬</div>
+      <div class="frame-placeholder" style="background:#111; color:#666">🎬</div>
+      <div class="frame-placeholder" style="background:#1a1a1a; color:#666">🎬</div>
+      <div class="frame-placeholder" style="background:#0d0d0d; color:#666">🎬</div>
+      <div class="frame-placeholder" style="background:#1a1a1a; color:#666">🎬</div>
+      <div class="frame-placeholder" style="background:#111; color:#666">🎬</div>
+    </div>
+    <div class="example-arrow"></div>
+    <div class="example-body">
+      <span class="example-label">Example b</span>
+      <div class="example-question">
+        <span>Question:</span> Why did the store employee place the handwritten sign on the metal security shutters?
+      </div>
+      <div class="example-events">
+        <div class="events-title">Events</div>
+        <ol>
+          <li>A store employee arrives at the grocery store to find it locked behind security shutters.</li>
+          <li>The employee struggles with a jammed padlock due to their gloved hands.</li>
+          <li>The employee lies on the convenience store floor to create a makeshift sign.</li>
+          <li>The employee stands precariously on a garbage can outside the store.</li>
+          <li>The employee attaches a handwritten sign reading 'I ASSURE YOU WE'RE OPEN!' to the metal security shutters.</li>
+          <li>A handwritten sign reading 'I ASSURE YOU WE'RE OPEN!' hangs on the storefront.</li>
+        </ol>
+      </div>
+      <div class="example-answer">
+        <strong>Answer:</strong> The store employee placed the handwritten sign reading 'I ASSURE YOU WE'RE OPEN!' because they found the entrance locked behind security shutters with a jammed padlock. After struggling with the lock while wearing gloves and showing growing frustration, they improvised this solution to signal to potential customers that business was continuing despite the closed appearance of the storefront.
+      </div>
     </div>
   </div>
 </section>

@@ -385,6 +385,7 @@
     <li><a href="#dataset">Dataset</a></li>
     <li><a href="#examples">Examples</a></li>
     <li><a href="#leaderboard">Leaderboard</a></li>
+    <li><a href="#reasoning">Reasoning</a></li>
     <li><a href="#citation">Citation</a></li>
   </ul>
 </nav>
@@ -576,6 +577,51 @@
   </p>
 </section>
 
+
+<!-- REASONING TABLE -->
+<section id="reasoning">
+  <h2>Reasoning Category Breakdown</h2>
+  <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;">
+    Comparison across 7 reasoning categories. <span style="color:var(--accent); font-weight:600;">Bold blue</span> values indicate the best result per category.
+  </p>
+  <div class="lb-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Caus.</th>
+          <th>Nar.</th>
+          <th>Char.</th>
+          <th>Theme</th>
+          <th>Goal</th>
+          <th>Soc.</th>
+          <th>Hypo.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="model-name">VideoChat Flash <span class="model-tag tag-open">7B</span></td>
+          <td>27.22</td><td>30.01</td><td>32.21</td><td>31.25</td><td>30.79</td><td>32.38</td><td>28.35</td>
+        </tr>
+        <tr>
+          <td class="model-name">Qwen2.5VL <span class="model-tag tag-open">7B</span></td>
+          <td>31.15</td><td>34.97</td><td>34.71</td><td>35.56</td><td>33.10</td><td>33.88</td>
+          <td class="score-best">33.22</td>
+        </tr>
+        <tr style="border-top: 2px solid var(--border);">
+          <td class="model-name">Video-NaRA <span class="model-tag tag-ours">Ours</span></td>
+          <td class="score-best">34.92</td>
+          <td class="score-best">37.87</td>
+          <td class="score-best">36.91</td>
+          <td class="score-best">38.68</td>
+          <td class="score-best">33.98</td>
+          <td class="score-best">35.68</td>
+          <td>32.11</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
 
 <!-- CITATION -->
 <section id="citation">
